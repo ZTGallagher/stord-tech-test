@@ -1,0 +1,29 @@
+{{- if .Values.env.PHX_HOST }}
+
+To verify that everything is running correctly, follow the steps below:
+
+## 1. Verify Postgres Deployment:
+
+  You can check if PostgreSQL is running and connect to it using the following commands:
+
+    kubectl port-forward -n {{ .Release.Namespace }} svc/sre-db-postgresql 55432:5432
+    psql postgresql://postgres:password@127.0.0.1:55432/sre-technical-challenge
+
+## 2. Port-forward the Phoenix application to access it locally:
+
+  To access the Phoenix application, use the following port-forward command:
+
+    kubectl port-forward -n {{ .Release.Namespace }} svc/{{ include "sre-technical-challenge.fullname" . }} 8080:80
+
+  Once the application is port-forwarded, you can access the following pages:
+
+  • Phoenix default page: http://localhost:8080/
+  • Todos page: http://localhost:8080/todos
+
+  ## 3. Cleanup Resources:
+
+  To uninstall the Helm chart and remove the resources created, use the following commands:
+
+    helm uninstall {{ .Release.Name }} --namespace {{ .Release.Namespace }}
+    helm uninstall sre-db --namespace {{ .Release.Namespace }}
+{{- end }}

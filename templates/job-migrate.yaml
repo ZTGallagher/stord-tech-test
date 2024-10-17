@@ -1,0 +1,23 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "sre-technical-challenge.fullname" . }}-migrate
+  labels:
+    app: {{ include "sre-technical-challenge.name" . }}
+spec:
+  template:
+    metadata:
+      labels:
+        app: {{ include "sre-technical-challenge.name" . }}
+    spec:
+      restartPolicy: OnFailure
+      containers:
+        - name: migrate
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: IfNotPresent
+          command: ["/bin/sh", "-c", "./migrate"]
+          envFrom:
+            - secretRef:
+                name: {{ include "sre-technical-challenge.fullname" . }}-secret
+            - configMapRef:
+                name: {{ include "sre-technical-challenge.fullname" . }}-configmap

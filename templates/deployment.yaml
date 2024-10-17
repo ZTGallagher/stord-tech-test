@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "sre-technical-challenge.fullname" . }}
+  labels:
+    app: {{ include "sre-technical-challenge.name" . }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ include "sre-technical-challenge.name" . }}
+  template:
+    metadata:
+      labels:
+        app: {{ include "sre-technical-challenge.name" . }}
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: IfNotPresent
+          envFrom:
+            - secretRef:
+                name: {{ include "sre-technical-challenge.fullname" . }}-secret
+            - configMapRef:
+                name: {{ include "sre-technical-challenge.fullname" . }}-configmap
+          ports:
+            - containerPort: {{ .Values.env.PORT }}
+          command: ["/bin/sh", "-c", "./server"]
+          livenessProbe:
+            httpGet:
+              path: /_health
+              port: {{ .Values.env.PORT }}
+              scheme: HTTP
+            initialDelaySeconds: 15
+            periodSeconds: 30
+            failureThreshold: 3
+            timeoutSeconds: 5
+          readinessProbe:
+            httpGet:
+              path: /_health
+              port: {{ .Values.env.PORT }}
+              scheme: HTTP
+            initialDelaySeconds: 15
+            periodSeconds: 30
+            failureThreshold: 3
+            timeoutSeconds: 5

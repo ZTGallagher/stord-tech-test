@@ -1,0 +1,3 @@
+name: sre-technical-challenge
+description: A Helm chart for deploying the Stord SRE tech challenge.
+version: 0.1.0
