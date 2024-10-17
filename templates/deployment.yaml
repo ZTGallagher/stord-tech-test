@@ -14,6 +14,16 @@ spec:
       labels:
         app: {{ include "sre-technical-challenge.name" . }}
     spec:
+      initContainers:
+        - name: {{ .Chart.Name }}-db-migrate
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: IfNotPresent
+          command: ["/bin/sh", "-c", "./migrate"]
+          envFrom:
+            - secretRef:
+                name: {{ include "sre-technical-challenge.fullname" . }}-secret
+            - configMapRef:
+                name: {{ include "sre-technical-challenge.fullname" . }}-configmap
       containers:
         - name: {{ .Chart.Name }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"

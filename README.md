@@ -2,11 +2,20 @@
 
 This chart deploys the Stord technical challenge app.
 
+## Cluster Setup
+
+IF you don't already have a cluster to test against, you can easily create one for the purposes of this demo with the following commands, assuming you have k3d installed (which you can get with brew).
+
+   ```bash
+   k3d cluster create
+   kubectl create namespace stord
+   ```
+
 ## Postgres Setup
 
 The application requires a Postgres database to be available before it starts. Commands below will get a db ready. 
 
-This will also create the namespace if it doesn't already exist, an important step for later.
+This will also create the namespace if it doesn't already exist, an important step for later. Otherwise you'll need to create it yourself.
 
    ```bash
    helm repo add bitnami https://charts.bitnami.com/bitnami
@@ -36,6 +45,8 @@ Once PostgreSQL is set up, you can deploy the Elixir application using this:
 
 2. **Install the Helm chart:**
 
+The first install might take a minute or so.
+
    ```bash
    helm install sre-app . \
       --namespace stord \
@@ -48,10 +59,10 @@ Once PostgreSQL is set up, you can deploy the Elixir application using this:
 
 1. **Postgres Deployment:**
 
-```bash
-kubectl port-forward -n stord svc/sre-db-postgresql 55432:5432
-psql postgresql://postgres:password@127.0.0.1:55432/sre-technical-challenge
-```
+   ```bash
+   kubectl port-forward -n stord svc/sre-db-postgresql 55432:5432
+   psql postgresql://postgres:password@127.0.0.1:55432/sre-technical-challenge
+   ```
 
 2. **Port-forward the Phoenix application:**
 
@@ -64,7 +75,7 @@ psql postgresql://postgres:password@127.0.0.1:55432/sre-technical-challenge
 
 ### Cleanup
 
-```bash
-helm uninstall sre-app --namespace stord
-helm uninstall sre-db --namespace stord
-```
+   ```bash
+   helm uninstall sre-app --namespace stord
+   helm uninstall sre-db --namespace stord
+   ```
